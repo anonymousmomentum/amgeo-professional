@@ -1,0 +1,40 @@
+# Production Configuration Template
+debug: false
+log_level: INFO
+
+database:
+  url: ${DATABASE_URL}
+  echo: false
+  pool_size: 20
+  max_overflow: 30
+
+redis:
+  url: ${REDIS_URL}
+
+api:
+  host: 0.0.0.0
+  port: 8000
+  reload: false
+
+inversion:
+  default_method: pygimli
+  fallback_methods:
+    - damped_lsq
+  max_iterations: 100
+  cache_results: true
+
+ml:
+  model_cache_dir: /app/data/models
+  feature_cache_dir: /app/data/processed/features
+  default_cv_folds: 10
+
+logging:
+  level: INFO
+  format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+  file: /app/logs/amgeo.log
+  max_size: 50MB
+  backup_count: 10
+
+security:
+  secret_key: ${SECRET_KEY}
+  cors_origins: ${CORS_ORIGINS}

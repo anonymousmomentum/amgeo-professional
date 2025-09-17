@@ -1,0 +1,78 @@
+#version: '3.8'
+
+services:
+  postgres:
+    image: postgis/postgis:15-3.3
+    environment:
+      POSTGRES_DB: amdigits
+      POSTGRES_USER: anonmomentum
+      POSTGRES_PASSWORD: mapple
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./scripts/sql:/docker-entrypoint-initdb.d
+      # environment variables for postgres
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U anonmomentum -d amdigits"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    command: redis-server --appendonly yes
+
+  jupyter:
+    build:
+      context: .
+      dockerfile: docker/development/Dockerfile.jupyter
+    ports:
+      - "8888:8888"
+    volumes:
+      - .:/workspace
+      - jupyter_data:/root/.jupyter
+    environment:
+      JUPYTER_ENABLE_LAB: "yes"
+    depends_on:
+      - postgres
+      - redis
+
+  streamlit:
+    build:
+      context: .
+      dockerfile: docker/development/Dockerfile.streamlit
+    ports:
+      - "8501:8501"
+    volumes:
+      - .:/workspace
+    environment:
+      PYTHONPATH: /workspace/src
+    depends_on:
+      - postgres
+      - redis
+    command: streamlit run streamlit_app/app.py --server.address 0.0.0.0
+
+  api:
+    build:
+      context: .
+      dockerfile: docker/development/Dockerfile.api
+    ports:
+      - "8000:8000"
+    volumes:
+      - .:/workspace
+    environment:
+      PYTHONPATH: /workspace/src
+    depends_on:
+      - postgres
+      - redis
+    command: uvicorn src.amgeo.api.main:app --host 0.0.0.0 --port 8000 --reload
+
+volumes:
+  postgres_data:
+  redis_data:
+  jupyter_data:

@@ -1,0 +1,11 @@
+FROM amgeo-base:latest
+
+# Install additional API dependencies
+RUN pip install \
+    fastapi \
+    uvicorn[standard] \
+    python-multipart
+
+EXPOSE 8000
+
+CMD ["uvicorn", "src.amgeo.api.main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]

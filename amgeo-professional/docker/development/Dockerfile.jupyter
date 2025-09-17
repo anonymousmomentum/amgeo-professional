@@ -1,0 +1,14 @@
+FROM amgeo-base:latest
+
+# Install Jupyter extensions
+RUN pip install \
+    jupyterlab-git \
+    jupyterlab-lsp \
+    python-lsp-server \
+    ipywidgets \
+    plotly \
+    bokeh
+
+EXPOSE 8888
+
+CMD ["jupyter", "lab", "--ip=0.0.0.0", "--allow-root", "--no-browser"]

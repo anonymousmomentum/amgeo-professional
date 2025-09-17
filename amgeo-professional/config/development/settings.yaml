@@ -1,0 +1,44 @@
+# Development Configuration
+debug: true
+log_level: DEBUG
+
+database:
+  url: postgresql://anonmomentum:mapple@localhost:5432/amdigits
+  echo: true
+  pool_size: 5
+  max_overflow: 10
+
+redis:
+  url: redis://localhost:6379/0
+
+api:
+  host: 0.0.0.0
+  port: 8000
+  reload: true
+
+streamlit:
+  host: 0.0.0.0
+  port: 8501
+  debug: true
+
+inversion:
+  default_method: pygimli
+  fallback_methods:
+    - damped_lsq
+    - ensemble
+  max_iterations: 50
+  default_lambda: 20
+  cache_results: true
+
+ml:
+  model_cache_dir: data/models
+  feature_cache_dir: data/processed/features
+  default_cv_folds: 5
+  random_state: 42
+
+logging:
+  level: DEBUG
+  format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+  file: logs/amgeo_dev.log
+  max_size: 10MB
+  backup_count: 5

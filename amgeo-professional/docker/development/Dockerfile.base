@@ -1,0 +1,34 @@
+FROM python:3.11-slim
+
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    gcc \
+    g++ \
+    gfortran \
+    libopenblas-dev \
+    liblapack-dev \
+    libgdal-dev \
+    libproj-dev \
+    libgeos-dev \
+    libspatialite-dev \
+    git \
+    curl \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install Poetry
+RUN pip install poetry
+
+# Set working directory
+WORKDIR /workspace
+
+# Copy Poetry files
+COPY pyproject.toml poetry.lock* ./
+
+# Configure Poetry
+RUN poetry config virtualenvs.create false
+
+# Install dependencies
+RUN poetry install --no-dev
+
+# Set Python path
+ENV PYTHONPATH=/workspace/src
